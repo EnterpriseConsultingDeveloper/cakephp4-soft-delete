@@ -1,5 +1,5 @@
 {
-    "name": "salines/cakephp4-soft-delete",
+    "name": "whiterabbit/cakephp4-soft-delete",
     "description": "SoftDelete plugin updated for CakePHP 4",
     "keywords": ["cakephp", "cakephp 4", "plugin", "soft", "delete", "deletable"],
     "homepage": "https://github.com/salines/cakephp4-soft-delete",
