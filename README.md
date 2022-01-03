@@ -1,4 +1,4 @@
-# CakeSoftDelete plugin for CakePHP 4.x
+# CakeSoftDelete plugin for CakePHP 3.10 and 4.x
 
 ## Fork
 
