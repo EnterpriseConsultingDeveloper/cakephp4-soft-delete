@@ -1,7 +1,7 @@
 <?php
 namespace SoftDelete\Model\Table;
 
-use Cake\ORM\RulesChecker;
+use Cake\Datasource\RulesChecker as BaseRulesChecker;
 use Cake\Datasource\EntityInterface;
 use SoftDelete\Error\MissingColumnException;
 use SoftDelete\ORM\Query;
@@ -12,15 +12,11 @@ trait SoftDeleteTrait
      * Get the configured deletion field
      *
      * @return string
-     * @throws \SoftDelete\Error\MissingFieldException
+     * @throws MissingColumnException
      */
-    public function getSoftDeleteField()
-    {
-        if (isset($this->softDeleteField)) {
-            $field = $this->softDeleteField;
-        } else {
-            $field = 'deleted';
-        }
+    public function getSoftDeleteField(): string
+	{
+		$field = $this->softDeleteField ?? 'deleted';
 
         if ($this->getSchema()->getColumn($field) === null) {
             throw new MissingColumnException(
@@ -45,8 +41,8 @@ trait SoftDeleteTrait
      * Will soft delete the entity provided. Will remove rows from any
      * dependent associations, and clear out join tables for BelongsToMany associations.
      *
-     * @param \Cake\DataSource\EntityInterface $entity The entity to soft delete.
-     * @param \ArrayObject $options The options for the delete.
+     * @param \Cake\DataSource\EntityInterface $entity The entity to softly delete.
+     * @param \ArrayObject $options The options for the deletion.
      * @throws \InvalidArgumentException if there are no primary key values of the
      * passed entity
      * @return bool success
@@ -63,7 +59,7 @@ trait SoftDeleteTrait
             throw new \InvalidArgumentException($msg);
         }
 
-        if ($options['checkRules'] && !$this->checkRules($entity, RulesChecker::DELETE, $options)) {
+        if ($options['checkRules'] && !$this->checkRules($entity, BaseRulesChecker::DELETE, $options)) {
             return false;
         }
         /** @var \Cake\Event\Event $event */
@@ -85,7 +81,7 @@ trait SoftDeleteTrait
         );
 
         $query = $this->query();
-        $conditions = (array)$entity->extract($primaryKey);
+        $conditions = $entity->extract($primaryKey);
         $statement = $query->update()
             ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
             ->where($conditions)
@@ -93,7 +89,7 @@ trait SoftDeleteTrait
 
         $success = $statement->rowCount() > 0;
         if (!$success) {
-            return $success;
+            return false;
         }
 
         $this->dispatchEvent(
@@ -104,7 +100,7 @@ trait SoftDeleteTrait
             ]
         );
 
-        return $success;
+        return true;
     }
 
     /**
@@ -126,33 +122,28 @@ trait SoftDeleteTrait
      * Hard deletes the given $entity.
      * @return bool true in case of success, false otherwise.
      */
-    public function hardDelete(EntityInterface $entity)
-    {
+    public function hardDelete(EntityInterface $entity): bool
+	{
         if(!$this->delete($entity)) {
             return false;
         }
         $primaryKey = (array)$this->getPrimaryKey();
         $query = $this->query();
-        $conditions = (array)$entity->extract($primaryKey);
+        $conditions = $entity->extract($primaryKey);
         $statement = $query->delete()
             ->where($conditions)
             ->execute();
 
-        $success = $statement->rowCount() > 0;
-        if (!$success) {
-            return $success;
-        }
-
-        return $success;
+        return $statement->rowCount() > 0;
     }
 
     /**
-     * Hard deletes all records that were soft deleted before a given date.
+     * Hard deletes all records that were softly deleted before a given date.
      * @param \DateTime $until Date until witch soft deleted records must be hard deleted.
      * @return int number of affected rows.
      */
-    public function hardDeleteAll(\Datetime $until)
-    {
+    public function hardDeleteAll(\Datetime $until): int
+	{
         $query = $this->query()
             ->delete()
             ->where(
@@ -169,7 +160,7 @@ trait SoftDeleteTrait
     /**
      * Restore a soft deleted entity into an active state.
      * @param EntityInterface $entity Entity to be restored.
-     * @return bool true in case of success, false otherwise.
+     * @return EntityInterface|false entity in case of success, false otherwise.
      */
     public function restore(EntityInterface $entity)
     {
