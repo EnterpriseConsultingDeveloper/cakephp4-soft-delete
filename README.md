@@ -2,7 +2,7 @@
 
 ## Fork
 
-This repo is forked from not maintained [pgbi/cakephp3-soft-delete](https://github.com/PGBI/cakephp3-soft-delete) and updated to avoid deprecated code in CakePHP >=4.0
+This repo is forked from not maintained [pgbi/cakephp3-soft-delete](https://github.com/PGBI/cakephp3-soft-delete) and updated to avoid deprecated code in CakePHP >=3.10
 
 ## Purpose
 
