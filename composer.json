@@ -9,9 +9,9 @@
         "source": "https://github.com/EnterpriseConsultingDeveloper/cakephp4-soft-delete"
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=8.0",
         "cakephp/plugin-installer": "*",
-        "cakephp/cakephp": ">=3.10"
+        "cakephp/cakephp": ">=4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
