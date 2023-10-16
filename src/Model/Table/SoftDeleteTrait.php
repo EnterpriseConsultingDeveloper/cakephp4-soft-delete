@@ -41,7 +41,7 @@ trait SoftDeleteTrait
      *
      * @return \Cake\ORM\Query\SelectQuery
      */
-    public function selectQuery(): Cake\ORM\Query\SelectQuery
+    public function selectQuery(): \Cake\ORM\Query\SelectQuery
     {
         return new SelectQuery($this->getConnection(), $this);
     }
