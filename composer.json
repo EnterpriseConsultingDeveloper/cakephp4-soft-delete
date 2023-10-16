@@ -14,6 +14,7 @@
         "cakephp/cakephp": ">=4.0"
     },
     "require-dev": {
+        "cakephp/cakephp": "4.5.*",
         "phpunit/phpunit": "*"
     },
     "autoload": {
@@ -25,6 +26,11 @@
         "psr-4": {
             "SoftDelete\\Test\\": "tests",
             "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "cakephp/plugin-installer": true
         }
     }
 }

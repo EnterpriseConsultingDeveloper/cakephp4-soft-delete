@@ -5,6 +5,7 @@ use Cake\Datasource\RulesChecker as BaseRulesChecker;
 use Cake\Datasource\EntityInterface;
 use SoftDelete\Error\MissingColumnException;
 use SoftDelete\ORM\Query;
+use SoftDelete\ORM\SelectQuery;
 
 trait SoftDeleteTrait
 {
@@ -33,6 +34,16 @@ trait SoftDeleteTrait
     public function query(): \Cake\ORM\Query
     {
         return new Query($this->getConnection(), $this);
+    }
+
+    /**
+     * Creates a new SelectQuery instance for a table.
+     *
+     * @return \Cake\ORM\Query\SelectQuery
+     */
+    public function selectQuery(): Cake\ORM\Query\SelectQuery
+    {
+        return new SelectQuery($this->getConnection(), $this);
     }
 
     /**
