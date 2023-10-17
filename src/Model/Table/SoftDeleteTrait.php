@@ -1,4 +1,5 @@
 <?php
+
 namespace SoftDelete\Model\Table;
 
 use Cake\Datasource\RulesChecker as BaseRulesChecker;
@@ -16,8 +17,8 @@ trait SoftDeleteTrait
      * @throws MissingColumnException
      */
     public function getSoftDeleteField(): string
-	{
-		$field = $this->softDeleteField ?? 'deleted';
+    {
+        $field = $this->softDeleteField ?? 'deleted';
 
         if ($this->getSchema()->getColumn($field) === null) {
             throw new MissingColumnException(
@@ -52,11 +53,11 @@ trait SoftDeleteTrait
      * Will soft delete the entity provided. Will remove rows from any
      * dependent associations, and clear out join tables for BelongsToMany associations.
      *
-     * @param \Cake\DataSource\EntityInterface $entity The entity to softly delete.
-     * @param \ArrayObject $options The options for the deletion.
-     * @throws \InvalidArgumentException if there are no primary key values of the
-     * passed entity
+     * @param \Cake\DataSource\EntityInterface $entity  The entity to softly delete.
+     * @param \ArrayObject                     $options The options for the deletion.
      * @return bool success
+     * @throws \InvalidArgumentException if there are no primary key values of the
+     *                                                  passed entity
      */
     protected function _processDelete($entity, $options): bool
     {
@@ -73,23 +74,24 @@ trait SoftDeleteTrait
         if ($options['checkRules'] && !$this->checkRules($entity, BaseRulesChecker::DELETE, $options)) {
             return false;
         }
+
         /** @var \Cake\Event\Event $event */
-        $event = $this->dispatchEvent(
-            'Model.beforeDelete', 
-            [
-                'entity' => $entity,
-                'options' => $options
-            ]
-        );
+        $event = $this->dispatchEvent('Model.beforeDelete', [
+            'entity' => $entity,
+            'options' => $options
+        ]);
 
         if ($event->isStopped()) {
-            return $event->getResult();
+            return (bool)$event->getResult();
         }
 
-        $this->_associations->cascadeDelete(
+        $success = $this->_associations->cascadeDelete(
             $entity,
             ['_primary' => false] + $options->getArrayCopy()
         );
+        if (!$success) {
+            return $success;
+        }
 
         $query = $this->query();
         $conditions = $entity->extract($primaryKey);
@@ -103,13 +105,10 @@ trait SoftDeleteTrait
             return false;
         }
 
-        $this->dispatchEvent(
-            'Model.afterDelete', 
-            [
-                'entity' => $entity,
-                'options' => $options
-            ]
-        );
+        $this->dispatchEvent('Model.afterDelete', [
+            'entity' => $entity,
+            'options' => $options
+        ]);
 
         return true;
     }
@@ -134,8 +133,8 @@ trait SoftDeleteTrait
      * @return bool true in case of success, false otherwise.
      */
     public function hardDelete(EntityInterface $entity): bool
-	{
-        if(!$this->delete($entity)) {
+    {
+        if (!$this->delete($entity)) {
             return false;
         }
         $primaryKey = (array)$this->getPrimaryKey();
@@ -154,7 +153,7 @@ trait SoftDeleteTrait
      * @return int number of affected rows.
      */
     public function hardDeleteAll(\Datetime $until): int
-	{
+    {
         $query = $this->query()
             ->delete()
             ->where(
